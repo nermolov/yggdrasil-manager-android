@@ -20,3 +20,6 @@ local.properties
 /app/release
 .idea/
 app/gha.jks
+
+# hardcoded yggdrasil config
+/app/src/main/res/raw/yggdrasil.conf
