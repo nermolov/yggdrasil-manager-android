@@ -52,18 +52,16 @@ object ConfigurationProxy {
             json.put("IfName", "none")
             json.put("IfMTU", 65535)
 
-            if (json.getJSONArray("MulticastInterfaces").get(0) is String) {
-                val ar = JSONArray()
-                ar.put(0, JSONObject("""
-                    {
-                        "Regex": ".*",
-                        "Beacon": true,
-                        "Listen": true,
-                        "Password": ""
-                    }
-                """.trimIndent()))
-                json.put("MulticastInterfaces", ar)
-            }
+            val ar = JSONArray()
+            ar.put(0, JSONObject("""
+                {
+                    "Regex": ".*",
+                    "Beacon": true,
+                    "Listen": true,
+                    "Password": ""
+                }
+            """.trimIndent()))
+            json.put("MulticastInterfaces", ar)
         }
     }
 
