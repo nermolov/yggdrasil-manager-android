@@ -8,23 +8,22 @@ import java.io.File
 
 object ConfigurationProxy {
     private lateinit var json: JSONObject
-    private lateinit var file: File
+    private lateinit var jsonString: String
 
     operator fun invoke(applicationContext: Context): ConfigurationProxy {
-        file = File(applicationContext.filesDir, "yggdrasil.conf")
-        if (!file.exists()) {
-            val conf = Mobile.generateConfigJSON()
-            if (file.createNewFile()) {
-                file.writeBytes(conf)
-            }
-        }
+        jsonString = applicationContext
+            .resources
+            .openRawResource(R.raw.yggdrasil)
+            .bufferedReader().use { it.readText() }
+
+        // parse and fix config
         fix()
         return this
     }
 
     fun resetJSON() {
         val conf = Mobile.generateConfigJSON()
-        file.writeBytes(conf)
+        jsonString = String(conf)
         fix()
     }
 
@@ -42,10 +41,9 @@ object ConfigurationProxy {
     }
 
     fun updateJSON(fn: (JSONObject) -> Unit) {
-        json = JSONObject(file.readText(Charsets.UTF_8))
+        json = JSONObject(jsonString)
         fn(json)
-        val str = json.toString()
-        file.writeText(str, Charsets.UTF_8)
+        jsonString = json.toString()
     }
 
     private fun fix() {
@@ -54,18 +52,16 @@ object ConfigurationProxy {
             json.put("IfName", "none")
             json.put("IfMTU", 65535)
 
-            if (json.getJSONArray("MulticastInterfaces").get(0) is String) {
-                val ar = JSONArray()
-                ar.put(0, JSONObject("""
-                    {
-                        "Regex": ".*",
-                        "Beacon": true,
-                        "Listen": true,
-                        "Password": ""
-                    }
-                """.trimIndent()))
-                json.put("MulticastInterfaces", ar)
-            }
+            val ar = JSONArray()
+            ar.put(0, JSONObject("""
+                {
+                    "Regex": ".*",
+                    "Beacon": true,
+                    "Listen": true,
+                    "Password": ""
+                }
+            """.trimIndent()))
+            json.put("MulticastInterfaces", ar)
         }
     }
 

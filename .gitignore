@@ -18,3 +18,8 @@ local.properties
 /app/libs/yggdrasil-sources.jar
 /app/release/*
 /app/release
+.idea/
+app/gha.jks
+
+# hardcoded yggdrasil config
+/app/src/main/res/raw/yggdrasil.conf
